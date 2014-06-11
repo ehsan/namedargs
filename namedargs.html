@@ -19,5 +19,21 @@
         <th>Date:</th><td colspan="2">2014-06-11</td>
       </tr>
     </table>
+    <h4>Motivation</h4>
+    <p>Large software projects usually have thousands of different functions
+    that take a large number of arguments which use the same types.  As a
+    result, it's common to see a large number of arguments at the call sites
+    and it's difficult to tell what the function exactly does without checking
+    its declaration and matching the arguments manually.  Even more
+    importantly, it's very common for authors to make mistakes when passing the
+    arguments by making incorrect assumptions about the order in which the
+    function expects them, which can cause bugs at runtime which are hard to
+    prevent and diagnose.</p>
+    <p>We therefore need a mechanism in the language in order to help document
+    the author's intention at the call site, and prevent them from making
+    mistakes at compile time.  We believe that by allowing the author to name
+    the arguments that they're passing to the function and have the compiler
+    match them with the parameters that the function expects by matching the
+    names.</p>
   </body>
 </html>
