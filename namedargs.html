@@ -1,7 +1,11 @@
+<!-- vim: set ts=2 sw=2 tw=80 fo=tc et -->
 <!DOCTYPE html>
 <html>
   <head>
     <title>A proposal for named arguments for C++</title>
+    <style>
+      code { white-space: pre; }
+    </style>
   </head>
   <body>
     <h3>Named arguments</h3>
@@ -35,5 +39,17 @@
     the arguments that they're passing to the function and have the compiler
     match them with the parameters that the function expects by matching the
     names.</p>
+    <h4>Example</h4>
+    <p>The below is an example of the kind of code that can be written with what
+    is being proposed here.</p>
+    <code>
+      void draw_rect(int left, int top, int width, int height, bool fill_rect = false);
+      int main()
+      {
+        // Both of the below function calls pass the same set of arguments to draw_rect.
+        draw_rect(top: 10, left: 100, width: 640, height: 480);
+        draw_rect(100, 10, height: 480, fill_rect: false, width: 640);
+      }
+    </code>
   </body>
 </html>
