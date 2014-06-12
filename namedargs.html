@@ -25,10 +25,11 @@
     </table>
     <h4>Motivation</h4>
     <p>Large software projects usually have thousands of different functions
-    that take a large number of arguments which use the same types.  As a
-    result, it's common to see a large number of arguments at the call sites
-    and it's difficult to tell what the function exactly does without checking
-    its declaration and matching the arguments manually.  Even more
+    that accept a large number of parameters which use the same types or are
+    otherwise indistinguishable at call sites because of implicit conversions.
+    As a result, it's common to see a large number of arguments at the call
+    sites and it's difficult to tell what the function exactly does without
+    checking its declaration and matching the arguments manually.  Even more
     importantly, it's very common for authors to make mistakes when passing the
     arguments by making incorrect assumptions about the order in which the
     function expects them, which can cause bugs at runtime which are hard to
@@ -83,8 +84,8 @@
       }
     </code>
     <p>If the same function is declared more than once, it can only be called
-    using named arguments if the names or lack of for each parameter is exactly
-    the same in each declaration.  Here is an example:</p>
+    using named arguments if the names or lack thereof for each parameter is
+    exactly the same in each declaration.  Here is an example:</p>
     <code>
       void foo(int a, char b, std::string c);
       void foo(int a, char b, std::string x);
@@ -94,14 +95,13 @@
           foo(1, 'c', "s"); // valid
           foo(1, 'c', c: "s"); // invalid -- different names for an argument in multiple declarations
           foo(1, 'c', x: "s"); // invalid -- different names for an argument in multiple declarations
-          // NOTE: The following has been disallowed for simplicity, we might be able to handle it properly
           bar(1, b: 'c'); // invalid -- different names for an argument in multiple declarations
       }
     </code>
     <p>If the parameter list for a function drops some of the parameter names,
     assuming that parameter N is the last to not have a name, all well-formed
-    calls to that function must provide at least N named arguments.  Here is an
-    example:</p>
+    calls to that function must provide at least N positional arguments.  Here
+    is an example:</p>
     <code>
       void foo(int, char b, std::string c);
       void bar(int = 1, char b='c', float c=0.1);
@@ -144,8 +144,8 @@
     <h5>Overload resolution</h5>
     <p>Overload resolution needs to be modified slightly in order to handle
     named arguments correctly.  We focus on calls to named functions
-    [over.call.func] here.  The language here will need to be extended for
-    other cases of overload resolution in the future.</p>
+    [over.call.func] here.  The language here will be extended for other cases
+    of overload resolution in the future.</p>
     <p>We need to define a new condition in order to determine whether a
     candidate function is viable or not.  The basic idea is to use the names of
     the named arguments to filter out the candidate functions for which we will
@@ -170,7 +170,7 @@
     value.</p>
     <p>After this step, the rest of the overload resolution steps will be taken
     as normal.</p>
-    <p>It should also be noted that we only consider the declaration preceding
+    <p>It should also be noted that we only consider the declarations preceding
     the call site in the above steps.</p>
     <h4>FAQ</h4>
     <p>Q: Is this backwards compatible?</p>
