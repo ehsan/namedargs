@@ -53,18 +53,19 @@
     </code>
     <h4>Proposal</h4>
     <h5>Basic semantics</h5>
-    <p>Named arguments are defined by extending <em>expression-list</em> to accept the
-    syntax of the form <em>identifier: expression</em>.  Non-named arguments are
-    referred to as positional arguments.  Positional arguments cannot appear
-    after a named argument.  If a function declaration includes an ellipsis
-    parameter, all of its arguments at call sites must be positional.  If a
-    function declaration includes default parameters, named arguments may give
-    values to some but not all of the optional parameters.  Here is an
-    example:</p>
+    <p>Named arguments are defined by extending <em>expression-list</em> to
+    accept the syntax of the form <em>identifier: expression</em>.  Non-named
+    arguments are referred to as positional arguments.  Positional arguments
+    cannot appear after a named argument.  If a function declaration includes
+    an ellipsis parameter or is a variadic template function, all of its
+    arguments at call sites must be positional.  If a function declaration
+    includes default parameters, named arguments may give values to some but
+    not all of the optional parameters.  Here is an example:</p>
     <code>
       void foo(int a, char b, std::string c);
       void bar(int a, char b='x', float c=0.1);
       void baz(int a, ...);
+      template &lt;class ...T&gt; void qux(T... a);
       void test() {
           foo(1, 'c', "s"); // valid
           foo(1, b: 'c', c: "s"); // valid
@@ -78,6 +79,7 @@
           bar(a: 1, 'c'); // invalid -- named argument followed by positional
           baz(a: 1); // invalid -- ellipsis parameter
           baz(1, foo: 1); // invalid -- ellipsis parameter
+          qux(a: 1); // invalid -- variadic template function
       }
     </code>
     <p>If the same function is declared more than once, it can only be called
@@ -118,6 +120,27 @@
       }
       void foo(int x, char y, std::string z) {}
     </code>
+    <p>It should also be noted that if the function definition is the first
+    declaration of the function, the name of the parameters in the definition
+    will be considered here.  Example:</p>
+    <code>
+      void foo(int a, char b, std::string c) {}
+      void test() {
+          foo(c: "s", a: 1, b: 'c');
+      }
+    </code>
+    <p>Similarly, if the definition of the function is the first declaration,
+    and a following declaration defines different names for the argument, using
+    named arguments to call that function would be an error.  Example:</p>
+    <code>
+      void foo(int a, char b, std::string c) {}
+      void foo(int x, char y, std::string z);
+      void test() {
+          foo(c: "s", a: 1, b: 'c'); // invalid -- different names for an argument in multiple declarations
+      }
+    </code>
+    <p>Function declarations in different translation units can use different
+    names for their arguments.</p>
     <h5>Overload resolution</h5>
     <p>Overload resolution needs to be modified slightly in order to handle
     named arguments correctly.  We focus on calls to named functions
@@ -147,5 +170,7 @@
     value.</p>
     <p>After this step, the rest of the overload resolution steps will be taken
     as normal.</p>
+    <p>It should also be noted that we only consider the declaration preceding
+    the call site in the above steps.</p>
   </body>
 </html>
