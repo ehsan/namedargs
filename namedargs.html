@@ -119,5 +119,33 @@
       void foo(int x, char y, std::string z) {}
     </code>
     <h5>Overload resolution</h5>
+    <p>Overload resolution needs to be modified slightly in order to handle
+    named arguments correctly.  We focus on calls to named functions
+    [over.call.func] here.  The language here will need to be extended for
+    other cases of overload resolution in the future.</p>
+    <p>We need to define a new condition in order to determine whether a
+    candidate function is viable or not.  The basic idea is to use the names of
+    the named arguments to filter out the candidate functions for which we will
+    be unable to assign each argument to a parameter in a function declaration.
+    The following gives a more precise definition of how this part of the
+    proposal works.</p>
+    <p>Let's assume that the function call has M positional arguments and N
+    named arguments.  A given candidate is discarded if either of the following
+    conditions holds:</p>
+    <ul>
+      <li>The candidate has fewer than M + N arguments.
+      <li>Disregarding the first M parameters of the function, there is a name
+      in the list of the rest of the arguments at the call site for which a
+      corresponding parameter cannot be found.
+      <li>A required parameter of the function remains unmatched after the
+      above step.
+    </ul>
+    <p>For remaining candidate functions, we reorder the N named arguments and
+    for i'th parameter of the function (i &lt; M + N) which remains unmatched,
+    we fill in a synthetic parameter using its default value.  Note that given
+    the above conditions, such parameters are guaranteed to have a default
+    value.</p>
+    <p>After this step, the rest of the overload resolution steps will be taken
+    as normal.</p>
   </body>
 </html>
