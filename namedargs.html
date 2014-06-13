@@ -54,11 +54,15 @@
       }
     </code>
     <h4>Proposal</h4>
+    <h5>Syntax</h5>
+    The syntax of <em>expression-list</em> is extended to accept elements of
+    the form <em>identifier: expression</em>. Such elements are only allowed
+    as arguments to a function call. Arguments written this way are reffered
+    to as <strong>named arguments</strong>. Non-named arguments are referred 
+    to as <strong>positional arguments</strong>.
     <h5>Basic semantics</h5>
-    <p>Named arguments are defined by extending <em>expression-list</em> to
-    accept the syntax of the form <em>identifier: expression</em>.  Non-named
-    arguments are referred to as positional arguments.  Positional arguments
-    cannot appear after a named argument.  If a function declaration includes
+    Positional arguments
+    cannot appear after a named argument.  If a function has
     an ellipsis parameter or is a variadic template function, all of its
     arguments at call sites must be positional.  If a function declaration
     includes parameters with default arguments, named arguments may give values 
