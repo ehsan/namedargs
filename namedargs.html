@@ -11,16 +11,16 @@
     <h3>Named arguments</h3>
     <table>
       <tr>
-        <th>Document number:</th><td colspan=2></td>
+        <th>Document number:</th><td></td>
       </tr>
       <tr>
-        <th rowspan=2>Authors:</th><td>Ehsan Akhgari</td><td>Mozilla</td>
+        <th rowspan=2>Authors:</th><td>Ehsan Akhgari (Mozilla), &lt;ehsan@mozilla.com&gt;</td>
       </tr>
       <tr>
-        <td>Botond Ballo</td><td>Mozilla</td>
+        <td>Botond Ballo (Mozilla), &lt;botond@mozilla.com&gt;</td>
       </tr>
       <tr>
-        <th>Date:</th><td colspan="2">2014-06-11</td>
+        <th>Date:</th><td>2014-06-13</td>
       </tr>
     </table>
     <h4>Motivation</h4>
@@ -28,39 +28,45 @@
     that accept a large number of parameters which use the same types or are
     otherwise indistinguishable at call sites because of implicit conversions.
     As a result, it's common to see a large number of arguments at the call
-    sites and it's difficult to tell what the function exactly does without
+    sites and it's difficult to tell what a function call does exactly without
     checking its declaration and matching the arguments manually.  Even more
     importantly, it's very common for authors to make mistakes when passing the
     arguments by making incorrect assumptions about the order in which the
     function expects them, which can cause bugs at runtime which are hard to
     prevent and diagnose.</p>
-    <p>We therefore need a mechanism in the language in order to help document
+    <p>We therefore believe that it would be very useful to have a mechanism 
+    in the language in order to help document
     the author's intention at the call site, and prevent them from making
     mistakes at compile time.  We believe that by allowing the author to name
     the arguments that they're passing to the function and have the compiler
     match them with the parameters that the function expects by matching the
     names.</p>
     <h4>Example</h4>
-    <p>The below is an example of the kind of code that can be written with what
+    <p>Below is an example of the kind of code that can be written with what
     is being proposed here.</p>
     <code>
       void draw_rect(int left, int top, int width, int height, bool fill_rect = false);
       int main()
       {
-        // Both of the below function calls pass the same set of arguments to draw_rect.
+        // Both of the function calls below pass the same set of arguments to draw_rect.
         draw_rect(top: 10, left: 100, width: 640, height: 480);
         draw_rect(100, 10, height: 480, fill_rect: false, width: 640);
       }
     </code>
     <h4>Proposal</h4>
+    <h5>Syntax</h5>
+    The syntax of <em>expression-list</em> is extended to accept elements of
+    the form <em>identifier: expression</em>. Such elements are only allowed
+    as arguments to a function call. Arguments written this way are reffered
+    to as <strong>named arguments</strong>. Non-named arguments are referred 
+    to as <strong>positional arguments</strong>.
     <h5>Basic semantics</h5>
-    <p>Named arguments are defined by extending <em>expression-list</em> to
-    accept the syntax of the form <em>identifier: expression</em>.  Non-named
-    arguments are referred to as positional arguments.  Positional arguments
-    cannot appear after a named argument.  If a function declaration includes
+    Positional arguments
+    cannot appear after a named argument.  If a function has
     an ellipsis parameter or is a variadic template function, all of its
     arguments at call sites must be positional.  If a function declaration
-    includes default parameters, named arguments may give values to some but
+    includes parameters with default arguments, named arguments may give values 
+    to some but
     not all of the optional parameters.  Here is an example:</p>
     <code>
       void foo(int a, char b, std::string c);
@@ -68,19 +74,19 @@
       void baz(int a, ...);
       template &lt;class ...T&gt; void qux(T... a);
       void test() {
-          foo(1, 'c', "s"); // valid
-          foo(1, b: 'c', c: "s"); // valid
-          foo(a: 1, 'c', "s"); // invalid -- named argument followed by positional
-          foo(1, c: "s", b: 'c'); // valid
-          foo(1, 'c', c: "s"); // valid
-          bar(1, c: 0.2); // valid
-          bar(1, b: 'c'); // valid
-          bar(1, c: 0.2, b: 'c'); // valid
-          bar(a: 1); // valid
-          bar(a: 1, 'c'); // invalid -- named argument followed by positional
-          baz(a: 1); // invalid -- ellipsis parameter
-          baz(1, foo: 1); // invalid -- ellipsis parameter
-          qux(a: 1); // invalid -- variadic template function
+          foo(1, 'c', "s");        // valid
+          foo(1, b: 'c', c: "s");  // valid
+          foo(a: 1, 'c', "s");     // invalid -- named argument followed by positional
+          foo(1, c: "s", b: 'c');  // valid
+          foo(1, 'c', c: "s");     // valid
+          bar(1, c: 0.2);          // valid
+          bar(1, b: 'c');          // valid
+          bar(1, c: 0.2, b: 'c');  // valid
+          bar(a: 1);               // valid
+          bar(a: 1, 'c');          // invalid -- named argument followed by positional
+          baz(a: 1);               // invalid -- ellipsis parameter
+          baz(1, foo: 1);          // invalid -- ellipsis parameter
+          qux(a: 1);               // invalid -- variadic template function
       }
     </code>
     <p>If the same function is declared more than once, it can only be called
@@ -92,10 +98,10 @@
       void bar(int a, char b);
       void bar(int x, char b);
       void test() {
-          foo(1, 'c', "s"); // valid
-          foo(1, 'c', c: "s"); // invalid -- different names for an argument in multiple declarations
-          foo(1, 'c', x: "s"); // invalid -- different names for an argument in multiple declarations
-          bar(1, b: 'c'); // invalid -- different names for an argument in multiple declarations
+          foo(1, 'c', "s");     // valid
+          foo(1, 'c', c: "s");  // invalid -- different names for an argument in multiple declarations
+          foo(1, 'c', x: "s");  // invalid -- different names for an argument in multiple declarations
+          bar(1, b: 'c');       // invalid -- different names for an argument in multiple declarations
       }
     </code>
     <p>If the parameter list for a function drops some of the parameter names,
@@ -106,45 +112,55 @@
       void foo(int, char b, std::string c);
       void bar(int = 1, char b='c', float c=0.1);
       void test() {
-          foo(1, c: "s", b: 'c'); // valid
-          bar(1, c: 0.2); // valid
-          bar(c: 0.2); // invalid - number of positional arguments(0) less than the index of the last unnamed parameter(1)
+          foo(1, c: "s", b: 'c');  // valid
+          bar(1, c: 0.2);          // valid
+          bar(c: 0.2);             // invalid - number of positional arguments(0) less than the index of the last unnamed parameter(1)
       }
     </code>
-    <p>Functions definitions do not affect calling functions with names
+    <p>Functions definitions do not affect calling functions with named
     arguments in any way.  Example:</p>
     <code>
       void foo(int a, char b, std::string c);
       void test() {
-          foo(c: "s", a: 1, b: 'c');
+          foo(c: "s", a: 1, b: 'c');  // valid
       }
       void foo(int x, char y, std::string z) {}
     </code>
-    <p>It should also be noted that if the function definition is the first
-    declaration of the function, the name of the parameters in the definition
-    will be considered here.  Example:</p>
+    <p>This is true even if the definition is located prior to the call site:</p>
+    <code>
+      void foo(int a, char b, std::string c);
+      void foo(int x, char y, std::string z) {}
+      void test() {
+          foo(c: "s", a: 1, b: 'c');  // still valid
+          foo(x: 1, y: 'c', z: "s");  // still invalid
+      }
+    </code>
+    <p>However, if a function definition is the first declaration of a function, 
+    the names of the parameters in the definition are considered. Example:</p>
     <code>
       void foo(int a, char b, std::string c) {}
       void test() {
-          foo(c: "s", a: 1, b: 'c');
+          foo(c: "s", a: 1, b: 'c');  // valid
       }
     </code>
-    <p>Similarly, if the definition of the function is the first declaration,
-    and a following declaration defines different names for the argument, using
-    named arguments to call that function would be an error.  Example:</p>
+    <p>If a following declaration then defines different names for the parameters, 
+    using named arguments to call that function would be an error.  Example:</p>
     <code>
       void foo(int a, char b, std::string c) {}
       void foo(int x, char y, std::string z);
       void test() {
-          foo(c: "s", a: 1, b: 'c'); // invalid -- different names for an argument in multiple declarations
+          foo(c: "s", a: 1, b: 'c');  // invalid -- different names for an argument in multiple declarations
       }
     </code>
-    <p>Function declarations in different translation units can use different
-    names for their arguments.</p>
+    <p>All of the above applies to function declarations/definitions in a single
+    translation unit. The same function may be declared in different translation
+    units with different parameter names, and each translation unit can have call
+    sites using the argument names that match the declaration in that translation 
+    unit.</p>
     <h5>Overload resolution</h5>
     <p>Overload resolution needs to be modified slightly in order to handle
     named arguments correctly.  We focus on calls to named functions
-    [over.call.func] here.  The language here will be extended for other cases
+    [over.call.func] here.  The wording here will be extended for other contexts
     of overload resolution in the future.</p>
     <p>We need to define a new condition in order to determine whether a
     candidate function is viable or not.  The basic idea is to use the names of
@@ -164,8 +180,9 @@
       above step.
     </ul>
     <p>For remaining candidate functions, we reorder the N named arguments and
-    for i'th parameter of the function (i &lt; M + N) which remains unmatched,
-    we fill in a synthetic parameter using its default value.  Note that given
+    if for some i &lt; M + N, the i'th parameter of the function remains unmatched,
+    we match it with a synthetic argument using the parameter's default value. Note
+    that given
     the above conditions, such parameters are guaranteed to have a default
     value.</p>
     <p>After this step, the rest of the overload resolution steps will be taken
@@ -177,6 +194,12 @@
     <p>A: Yes.  All existing programs will be valid with named arguments added
     to the language.  Only call sites which use named arguments will be
     affected by this proposal.</p>
+    <p>Q: Why was the <em>name: value</em> syntax chosen? Was other syntax considered?
+    <p>A: The <em>name=value</em> syntax was considered, but rejected because "="
+    is an operator and thus there would be an ambiguity. A ":" only current appears 
+    at the beginning of a <em>ctor-initializer</em>, after an <em>access-specifier</em>,
+    or in a <em>labeled-statement</em>, all contexts which are disjoint from
+    <em>expression-list</em>, so there is no ambiguity.
     <p>Q: Is there wording available for this proposal?</p>
     <p>A: Not yet.  At this stage we are mostly interested in general feedback
     about this proposal.</p>
