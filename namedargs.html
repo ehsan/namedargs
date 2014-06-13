@@ -28,26 +28,27 @@
     that accept a large number of parameters which use the same types or are
     otherwise indistinguishable at call sites because of implicit conversions.
     As a result, it's common to see a large number of arguments at the call
-    sites and it's difficult to tell what the function exactly does without
+    sites and it's difficult to tell what a function call does exactly without
     checking its declaration and matching the arguments manually.  Even more
     importantly, it's very common for authors to make mistakes when passing the
     arguments by making incorrect assumptions about the order in which the
     function expects them, which can cause bugs at runtime which are hard to
     prevent and diagnose.</p>
-    <p>We therefore need a mechanism in the language in order to help document
+    <p>We therefore believe that it would be very useful to have a mechanism 
+    in the language in order to help document
     the author's intention at the call site, and prevent them from making
     mistakes at compile time.  We believe that by allowing the author to name
     the arguments that they're passing to the function and have the compiler
     match them with the parameters that the function expects by matching the
     names.</p>
     <h4>Example</h4>
-    <p>The below is an example of the kind of code that can be written with what
+    <p>Below is an example of the kind of code that can be written with what
     is being proposed here.</p>
     <code>
       void draw_rect(int left, int top, int width, int height, bool fill_rect = false);
       int main()
       {
-        // Both of the below function calls pass the same set of arguments to draw_rect.
+        // Both of the function calls below pass the same set of arguments to draw_rect.
         draw_rect(top: 10, left: 100, width: 640, height: 480);
         draw_rect(100, 10, height: 480, fill_rect: false, width: 640);
       }
@@ -60,7 +61,8 @@
     cannot appear after a named argument.  If a function declaration includes
     an ellipsis parameter or is a variadic template function, all of its
     arguments at call sites must be positional.  If a function declaration
-    includes default parameters, named arguments may give values to some but
+    includes parameters with default arguments, named arguments may give values 
+    to some but
     not all of the optional parameters.  Here is an example:</p>
     <code>
       void foo(int a, char b, std::string c);
@@ -111,7 +113,7 @@
           bar(c: 0.2); // invalid - number of positional arguments(0) less than the index of the last unnamed parameter(1)
       }
     </code>
-    <p>Functions definitions do not affect calling functions with names
+    <p>Functions definitions do not affect calling functions with named
     arguments in any way.  Example:</p>
     <code>
       void foo(int a, char b, std::string c);
@@ -144,7 +146,7 @@
     <h5>Overload resolution</h5>
     <p>Overload resolution needs to be modified slightly in order to handle
     named arguments correctly.  We focus on calls to named functions
-    [over.call.func] here.  The language here will be extended for other cases
+    [over.call.func] here.  The wording here will be extended for other contexts
     of overload resolution in the future.</p>
     <p>We need to define a new condition in order to determine whether a
     candidate function is viable or not.  The basic idea is to use the names of
@@ -164,8 +166,9 @@
       above step.
     </ul>
     <p>For remaining candidate functions, we reorder the N named arguments and
-    for i'th parameter of the function (i &lt; M + N) which remains unmatched,
-    we fill in a synthetic parameter using its default value.  Note that given
+    if for some i &lt; M + N, the i'th parameter of the function remains unmatched,
+    we match it with a synthetic argument using the parameter's default value. Note
+    that given
     the above conditions, such parameters are guaranteed to have a default
     value.</p>
     <p>After this step, the rest of the overload resolution steps will be taken
