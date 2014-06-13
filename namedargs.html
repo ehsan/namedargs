@@ -122,22 +122,29 @@
     <code>
       void foo(int a, char b, std::string c);
       void test() {
-          foo(c: "s", a: 1, b: 'c');
+          foo(c: "s", a: 1, b: 'c');  // valid
       }
       void foo(int x, char y, std::string z) {}
     </code>
-    <p>It should also be noted that if the function definition is the first
-    declaration of the function, the name of the parameters in the definition
-    will be considered here.  Example:</p>
+    <p>This is true even if the definition is located prior to the call site:</p>
+    <code>
+      void foo(int a, char b, std::string c);
+      void foo(int x, char y, std::string z) {}
+      void test() {
+          foo(c: "s", a: 1, b: 'c');  // still valid
+          foo(x: 1, y: 'c', z: "s");  // still invalid
+      }
+    </code>
+    <p>However, if a function definition is the first declaration of a function, 
+    the names of the parameters in the definition are considered. Example:</p>
     <code>
       void foo(int a, char b, std::string c) {}
       void test() {
-          foo(c: "s", a: 1, b: 'c');
+          foo(c: "s", a: 1, b: 'c');  // valid
       }
     </code>
-    <p>Similarly, if the definition of the function is the first declaration,
-    and a following declaration defines different names for the argument, using
-    named arguments to call that function would be an error.  Example:</p>
+    <p>If a following declaration then defines different names for the parameters, 
+    using named arguments to call that function would be an error.  Example:</p>
     <code>
       void foo(int a, char b, std::string c) {}
       void foo(int x, char y, std::string z);
@@ -145,8 +152,11 @@
           foo(c: "s", a: 1, b: 'c');  // invalid -- different names for an argument in multiple declarations
       }
     </code>
-    <p>Function declarations in different translation units can use different
-    names for their arguments.</p>
+    <p>All of the above applies to function declarations/definitions in a single
+    translation unit. The same function may be declared in different translation
+    units with different parameter names, and each translation unit can have call
+    sites using the argument names that match the declaration in that translation 
+    unit.</p>
     <h5>Overload resolution</h5>
     <p>Overload resolution needs to be modified slightly in order to handle
     named arguments correctly.  We focus on calls to named functions
