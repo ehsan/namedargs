@@ -194,6 +194,12 @@
     <p>A: Yes.  All existing programs will be valid with named arguments added
     to the language.  Only call sites which use named arguments will be
     affected by this proposal.</p>
+    <p>Q: Why was the <em>name: value</em> syntax chosen? Was other syntax considered?
+    <p>A: The <em>name=value</em> syntax was considered, but rejected because "="
+    is an operator and thus there would be an ambiguity. A ":" only current appears 
+    at the beginning of a <em>ctor-initializer</em>, after an <em>access-specifier</em>,
+    or in a <em>labeled-statement</em>, all contexts which are disjoint from
+    <em>expression-list</em>, so there is no ambiguity.
     <p>Q: Is there wording available for this proposal?</p>
     <p>A: Not yet.  At this stage we are mostly interested in general feedback
     about this proposal.</p>
