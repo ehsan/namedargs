@@ -70,19 +70,19 @@
       void baz(int a, ...);
       template &lt;class ...T&gt; void qux(T... a);
       void test() {
-          foo(1, 'c', "s"); // valid
-          foo(1, b: 'c', c: "s"); // valid
-          foo(a: 1, 'c', "s"); // invalid -- named argument followed by positional
-          foo(1, c: "s", b: 'c'); // valid
-          foo(1, 'c', c: "s"); // valid
-          bar(1, c: 0.2); // valid
-          bar(1, b: 'c'); // valid
-          bar(1, c: 0.2, b: 'c'); // valid
-          bar(a: 1); // valid
-          bar(a: 1, 'c'); // invalid -- named argument followed by positional
-          baz(a: 1); // invalid -- ellipsis parameter
-          baz(1, foo: 1); // invalid -- ellipsis parameter
-          qux(a: 1); // invalid -- variadic template function
+          foo(1, 'c', "s");        // valid
+          foo(1, b: 'c', c: "s");  // valid
+          foo(a: 1, 'c', "s");     // invalid -- named argument followed by positional
+          foo(1, c: "s", b: 'c');  // valid
+          foo(1, 'c', c: "s");     // valid
+          bar(1, c: 0.2);          // valid
+          bar(1, b: 'c');          // valid
+          bar(1, c: 0.2, b: 'c');  // valid
+          bar(a: 1);               // valid
+          bar(a: 1, 'c');          // invalid -- named argument followed by positional
+          baz(a: 1);               // invalid -- ellipsis parameter
+          baz(1, foo: 1);          // invalid -- ellipsis parameter
+          qux(a: 1);               // invalid -- variadic template function
       }
     </code>
     <p>If the same function is declared more than once, it can only be called
@@ -94,10 +94,10 @@
       void bar(int a, char b);
       void bar(int x, char b);
       void test() {
-          foo(1, 'c', "s"); // valid
-          foo(1, 'c', c: "s"); // invalid -- different names for an argument in multiple declarations
-          foo(1, 'c', x: "s"); // invalid -- different names for an argument in multiple declarations
-          bar(1, b: 'c'); // invalid -- different names for an argument in multiple declarations
+          foo(1, 'c', "s");     // valid
+          foo(1, 'c', c: "s");  // invalid -- different names for an argument in multiple declarations
+          foo(1, 'c', x: "s");  // invalid -- different names for an argument in multiple declarations
+          bar(1, b: 'c');       // invalid -- different names for an argument in multiple declarations
       }
     </code>
     <p>If the parameter list for a function drops some of the parameter names,
@@ -108,9 +108,9 @@
       void foo(int, char b, std::string c);
       void bar(int = 1, char b='c', float c=0.1);
       void test() {
-          foo(1, c: "s", b: 'c'); // valid
-          bar(1, c: 0.2); // valid
-          bar(c: 0.2); // invalid - number of positional arguments(0) less than the index of the last unnamed parameter(1)
+          foo(1, c: "s", b: 'c');  // valid
+          bar(1, c: 0.2);          // valid
+          bar(c: 0.2);             // invalid - number of positional arguments(0) less than the index of the last unnamed parameter(1)
       }
     </code>
     <p>Functions definitions do not affect calling functions with named
@@ -138,7 +138,7 @@
       void foo(int a, char b, std::string c) {}
       void foo(int x, char y, std::string z);
       void test() {
-          foo(c: "s", a: 1, b: 'c'); // invalid -- different names for an argument in multiple declarations
+          foo(c: "s", a: 1, b: 'c');  // invalid -- different names for an argument in multiple declarations
       }
     </code>
     <p>Function declarations in different translation units can use different
