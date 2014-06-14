@@ -105,12 +105,13 @@
       }
     </code>
     <p>If the parameter list for a function drops some of the parameter names,
-    assuming that parameter N is the last to not have a name, all well-formed
+    assuming that parameter N is the last to not have a name (nor a default argument), 
+    all well-formed
     calls to that function must provide at least N positional arguments.  Here
     is an example:</p>
     <code>
       void foo(int, char b, std::string c);
-      void bar(int = 1, char b='c', float c=0.1);
+      void bar(int, char b='c', float c=0.1);
       void test() {
           foo(1, c: "s", b: 'c');  // valid
           bar(1, c: 0.2);          // valid
