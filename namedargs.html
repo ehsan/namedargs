@@ -115,7 +115,7 @@
       void test() {
           foo(1, c: "s", b: 'c');  // valid
           bar(1, c: 0.2);          // valid
-          bar(c: 0.2);             // invalid - number of positional arguments(0) less than the index of the last unnamed parameter(1)
+          bar(c: 0.2);             // invalid - number of positional arguments (0) less than the index of the last unnamed parameter (1)
       }
     </code>
     <p>Functions definitions do not affect calling functions with named
@@ -195,15 +195,18 @@
     <p>A: Yes.  All existing programs will be valid with named arguments added
     to the language.  Only call sites which use named arguments will be
     affected by this proposal.</p>
+    <br>
     <p>Q: Why was the <em>name: value</em> syntax chosen? Was other syntax considered?
     <p>A: The <em>name=value</em> syntax was considered, but rejected because "="
     is an operator and thus there would be an ambiguity. A ":" only current appears 
     at the beginning of a <em>ctor-initializer</em>, after an <em>access-specifier</em>,
     or in a <em>labeled-statement</em>, all contexts which are disjoint from
-    <em>expression-list</em>, so there is no ambiguity.
+    <em>expression-list</em>, so there is no ambiguity.</p>
+    <br>
     <p>Q: Is there wording available for this proposal?</p>
     <p>A: Not yet.  At this stage we are mostly interested in general feedback
     about this proposal.</p>
+    <br>
     <p>Q: Has this been implemented?</p>
     <p>A: Not yet.  From an implementation perspective, most of the effort of
     this proposal would be on the overload resolution phase of compilers.  One
@@ -211,6 +214,6 @@
     implementation of clang, and while we don't have an implementation yet, we
     believe that it will be relatively straightforward.  We have tried to
     ensure that the proposal makes as few changes to the language as possible
-    because of implementation concerns.</p>
+    to avoid unnecessary implementation complexity.</p>
   </body>
 </html>
