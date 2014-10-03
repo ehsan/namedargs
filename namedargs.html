@@ -24,24 +24,32 @@
       </tr>
     </table>
     <h4>Motivation</h4>
-    <p>Large software projects usually have thousands of different functions
-    that accept a large number of parameters which use the same types or are
-    otherwise indistinguishable at call sites because of implicit conversions.
-    As a result, it's common to see a large number of arguments at the call
-    sites and it's difficult to tell what a function call does exactly without
-    checking its declaration and matching the arguments manually.  Even more
-    importantly, it's very common for authors to make mistakes when passing the
-    arguments by making incorrect assumptions about the order in which the
-    function expects them, which can cause bugs at runtime which are hard to
-    prevent and diagnose.</p>
-    <p>We therefore believe that it would be very useful to have a mechanism 
-    in the language in order to help document
-    the author's intention at the call site, and prevent them from making
-    mistakes at compile time.  We believe that by allowing the author to name
-    the arguments that they're passing to the function and have the compiler
-    match them with the parameters that the function expects by matching the
-    names.</p>
-    <h4>Example</h4>
+    <p>Function arguments are currently associated with function parameters by
+    position. This has implications for writing and reading function calls.</p>
+    <p>When writing a function call, one needs to be careful to write the
+    arguments in the same order as the parameters in the function declaration;
+    depending on the types of the parameters, the compiler can catch some
+    mistakes, but other times they lead to runtime bugs that are hard to
+    diagnose and prevent.</p>
+    <p>When reading a function call, the only information
+    about the purpose of the argument that is present at the call site is its
+    value and order relative to other arguments; for more information, the
+    reader needs to refer to the corresponding parameter's name in the function
+    declaration.</p>
+    <p>Function declarations are typically "far away" from function calls in
+    code, meaning elsewhere in the file or, more often, in a different file.
+    Therefore, we believe that a mechanism for associating function arguments
+    with function parameters that reduces the need to refer to the function
+    declaration when writing and reading function calls, would make both jobs
+    easier.</p>
+    <p>This is particularly the case for large software projects, where there
+    can be thousands of functions in play at once, and reliance on conventions
+    (such as "top, right, left, bottom") doesn't scale; and particularly the
+    case for C++, where gotchas such as implicit conversions mean that extra
+    care is required for things like argument order.</p>
+    <p>We specifically propose that function arguments can be associated with
+    function parameters by using the parameter's name at the call site.</p>
+    <h5>Example</h5>
     <p>Below is an example of the kind of code that can be written with what
     is being proposed here.</p>
     <code>
