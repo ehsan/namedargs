@@ -198,6 +198,76 @@
     as normal.</p>
     <p>It should also be noted that we only consider the declarations preceding
     the call site in the above steps.</p>
+    <h4>Interactions with other language features</h4>
+    <h5>Constructor calls with <code>{ ... }</code> syntax</h5>
+    <p>As part of C++11 "uniform initialization", constructors can be called
+    with a <code>{ }</code> syntax in addition to a <code>( )</code> syntax:</p>
+    <code>
+      struct S {
+        S(int a, std::string b);
+        ...
+      };
+
+      S s(1, "foo");
+      S s{0, "bar"};
+    </code>
+    <p>We propose allowing the use of named arguments with both syntaxes:</p>
+    <code>
+      S s(a: 1, b: "foo");  // valid
+      S s{a: 0, b: "bar"};  // also valid
+    </code>
+    <h5>Aggregate initialization</h5>
+    <p>However, we do not propose allowing the use of named arguments with
+    aggregate initialization:</p>
+    <code>
+      struct S {
+        int a;
+        std::string b;
+      };
+
+      S s{1, "foo"};        // valid C++11
+      S s{a: 1, b: "foo"};  // not valid
+    </code>
+    <p>The rationale is that the names <code>a</code> and <code>b</code> here
+    are names of data members, whereas our proposal is about associating
+    arguments with parameter names.</p>
+    <p>We realize that this choice implies that the presence or absence of a
+    constructor in an aggregate class becomes more noticeable to users than
+    it was before. However, we believe that allowing the use of data member
+    names in the same syntax as named arguments has its own problems. For
+    example, adding a constructor to an aggregate class where the constructor
+    parameter names are different from the data member names could change the
+    meaning of the program. We believe disallowing this is the lesser of two
+    evils.</p>
+    <h5>Calls through function pointers</h5>
+    <p>Consider the following code:</p>
+    <code>
+      void func(int a, int b);
+
+      using funcptr_t = void (*)(int x, int y);
+
+      funcptr_t f = &func;
+
+      f(2, 3);
+    </code>
+    <p>Is it reasonable to allow a call to <code>f</code> to use named
+    arguments? If so, what names would be allowed?</p>
+    <p>Clearly, the names <code>a</code> and <code>b</code> are out of the
+    running, as they are the names of the function that the function pointer
+    points to, and what function a function pointer points to is a runtime
+    property of the program which the compiler cannot reason about.</p>
+    <p>However, perhaps it's reasonable to use the names <code>x</code> and
+    <code>y</code>, that is, the names of the parameters used in the declaration
+    of the function pointer, or (in case of a declaration using a typedef, as
+    here) in the declaration of the function pointer type?</p>
+    <p>We propose <strong>not</strong> allowing <code>x</code> and
+    <code>y</code> either, because it would require compilers to track parameter
+    names in typedef declarations and associate different declarations of a
+    typedef with each other to verify that the names are consistent. This
+    would cover new ground by giving typedef names a use they don't
+    currently have.</p>
+    <p>In summary, we propose disallowing named arguments for calls through
+    function pointers altogether.</p>
     <h4>Backwards Compatibility</h4>
     <p>The changes in this proposal are fully backwards-compatible. All existing
     programs will be valid with named arguments added to the language. Only
