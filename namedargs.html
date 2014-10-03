@@ -198,30 +198,30 @@
     as normal.</p>
     <p>It should also be noted that we only consider the declarations preceding
     the call site in the above steps.</p>
-    <h4>FAQ</h4>
-    <p>Q: Is this backwards compatible?</p>
-    <p>A: Yes.  All existing programs will be valid with named arguments added
-    to the language.  Only call sites which use named arguments will be
-    affected by this proposal.</p>
-    <br>
-    <p>Q: Why was the <em>name: value</em> syntax chosen? Was other syntax considered?
-    <p>A: The <em>name=value</em> syntax was considered, but rejected because "="
-    is an operator and thus there would be an ambiguity. A ":" only current appears 
-    at the beginning of a <em>ctor-initializer</em>, after an <em>access-specifier</em>,
-    or in a <em>labeled-statement</em>, all contexts which are disjoint from
-    <em>expression-list</em>, so there is no ambiguity.</p>
-    <br>
-    <p>Q: Is there wording available for this proposal?</p>
-    <p>A: Not yet.  At this stage we are mostly interested in general feedback
-    about this proposal.</p>
-    <br>
-    <p>Q: Has this been implemented?</p>
-    <p>A: Not yet.  From an implementation perspective, most of the effort of
-    this proposal would be on the overload resolution phase of compilers.  One
-    of the authors of this proposal has looked at the overload resolution
-    implementation of clang, and while we don't have an implementation yet, we
-    believe that it will be relatively straightforward.  We have tried to
-    ensure that the proposal makes as few changes to the language as possible
-    to avoid unnecessary implementation complexity.</p>
+    <h4>Backwards Compatibility</h4>
+    <p>The changes in this proposal are fully backwards-compatible. All existing
+    programs will be valid with named arguments added to the language. Only
+    call sites which use named arguments are affected by this proposal.</p>
+    <h4>Design Choices</h4>
+    <h5>Syntax</h5>
+    <p>The <em>name : value</em> syntax was chosen because there is precedent
+    in other languages for using it to associate a key and a value (e.g. Python
+    dictionaries, and because it does not create any ambiguity.
+    <em>name=value</em> was considered, but rejected because "=" is an operator
+    and thus there would be an ambiguity. A ":" only current appears at the
+    beginning of a <em>ctor-initializer</em>, after an
+    <em>access-specifier</em>, or in a <em>labeled-statement</em>, all contexts
+    which are disjoint from <em>expression-list</em>, so there is no
+    ambiguity.</p>
+    <h4>Implementation Status</h4>
+    <p>This proposal is not implemented yet. Most of the effort would be in
+    changes to the overload resolution phase of compilers. One of the authors of
+    this proposal has looked at the overload resolution implementation of clang,
+    and we believe the changes will be relatively straightforward to implement.
+    We have tried to ensure that the proposal makes as few changes to the
+    language as possible to avoid unnecessary implementation complexity.</p>
+    <h4>Standard Wording</h4>
+    <p>There is no standard wording for this proposal yet. At this stage, we
+    are mostly interested in getting general feedback.</p>
   </body>
 </html>
