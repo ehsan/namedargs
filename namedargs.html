@@ -320,6 +320,35 @@
     programmers should be able to start using it right away, without having to
     wait for libraries and APIs to opt-in to named arguments. We also believe
     that the potential for use in a way the author doesn't intend is low.</p>
+    <h4>Potential objections, and our responses</h4>
+    <h5>Objection #1: This feature caters to having functions with many
+    parameters - a programming style that should be discouraged.</h5>
+    <p>We agree that having functions with many parameters should be
+    discouraged. However, the reality is that many legacy APIs that
+    programmers have to work with and will have to work with for a long time,
+    have functions with many arguments, and making it easier to deal with such
+    functions would solve a real problem and be materially useful.</p>
+    <p>More importantly, however, this feature has a lot of value for functions
+    with few arguments, too. Even for functions with few arguments, when reading
+    a call site one has relatively little information about the roles of the
+    arguments. Having names of arguments present would make call sites more
+    readable, regardless of the number of arguments.</p>
+    <h5>Objection #2: This proposal competes with C99 designated initializers,
+    which are <a
+href="http://htmlpreview.github.io/?https://raw.github.com/CTMacUser/multiarray-
+iso-proposal/master/designation-proposal.html"> being proposed for C++</a></h5>
+    <p>This proposal and designated initializers have in common that they both
+    allow the use of names to allow specifying a list of entities in an order
+    that's not necessarily the order of their declaration.</p>
+    <p>For C99 designated initializers, the entities being named are data
+    members of a structure (and this is reflected in the
+    <code>.name = value</code> syntax). In our proposal, the entities being
+    named are always parameters of a function (note that while we support
+    constructor calls via the <code>{ ... }</code>, we do not support
+    aggregate initialization (see "Interactions with other language features"
+    above)).</p>
+    <p>The two proposals therefore have no overlap, and we believe they are
+    complementary.</p>
     <h4>Implementation Status</h4>
     <p>This proposal is not implemented yet. Most of the effort would be in
     changes to the overload resolution phase of compilers. One of the authors of
