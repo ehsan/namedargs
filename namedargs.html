@@ -298,6 +298,28 @@
     <em>access-specifier</em>, or in a <em>labeled-statement</em>, all contexts
     which are disjoint from <em>expression-list</em>, so there is no
     ambiguity.</p>
+    <h5>Not making parameter names part of a function's type</h5>
+    <p>In this proposal, the association of parameter names with a function for
+    the purpose of making calls with named arguments to that function happens
+    locally in each translation unit, and new declarations within a
+    translation unit can change a function's ability to be called with named
+    arguments at call sites below the new declaration (by using different
+    names than a previous declaration).</p>
+    <p>A possible alternative would have been to encode parameter names in a
+    function's type, and thus have them be coupled more closely to the function
+    as an entity, possibly including across translation units.</p>
+    <p>We chose not to pursue this alternative because we felt it would be a
+    far more complex and invasive change to the language, with relatively
+    little gain. It would also likely be non-backwards-compatible.</p>
+    <h5>Automatically allowing existing functions to be called via named
+    arguments</h5>
+    <p>This proposal allows calling existing functions with named
+    arguments, without the author of the function having to "opt-in" to this in
+    any way.</p>
+    <p>We chose this because we believe this feature has sufficient value that
+    programmers should be able to start using it right away, without having to
+    wait for libraries and APIs to opt-in to named arguments. We also believe
+    that the potential for use in a way the author doesn't intend is low.</p>
     <h4>Implementation Status</h4>
     <p>This proposal is not implemented yet. Most of the effort would be in
     changes to the overload resolution phase of compilers. One of the authors of
