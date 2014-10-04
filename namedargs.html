@@ -308,5 +308,26 @@
     <h4>Standard Wording</h4>
     <p>There is no standard wording for this proposal yet. At this stage, we
     are mostly interested in getting general feedback.</p>
+    <h4>Possible extensions and spin-off ideas</h4>
+    <h5>Non-trailing default arguments</h5>
+    <p>With named arguments, it might become sensible to allow default arguments
+    in non-trailing positions. For example,</p>
+    <code>void f(int a = 10, int b);</code>
+    <p>could be called like so:</p>
+    <code>f(b: 5);</code>
+    <p>We have no objections to this, but would prefer leaving it to a follow-up
+    proposal to avoid scope creep.</p>
+    <h5>Named template arguments</h5>
+    <p>The arguments in favour or allowing named arguments for function calls
+    also apply to template arguments. We can imagine a similar proposal that
+    allows specifying template parametes via named arguments. For example:</p>
+    <code>
+      template &lt;typename Key, typename Value&gt;
+      struct map { ... };
+
+      map&lt;Key: int, Value: string&gt; m;
+    </code>
+    <p>We think it makes sense to pursue this as a separate proposal,
+    independent of this one.</p>
   </body>
 </html>
