@@ -268,6 +268,21 @@
     currently have.</p>
     <p>In summary, we propose disallowing named arguments for calls through
     function pointers altogether.</p>
+    <h5>Perfect forwarding</h5>
+    <p>We've had a request to interoperate with perfect forwarding in such a way
+    that the following works:</p>
+    <code>
+      struct Rect {
+        Rect(int width, int height);
+        ...
+      };
+
+      auto p = make_shared&lt;Rect&gt;(width: 100, height: 200);
+    </code>
+    <p>While we agree that having this work would be desirable, unfortunately we
+    are not aware of a way to make this work without making parameter names
+    part of a function's type, something we definitely do not propose (see
+    Design Choices below).</p>
     <h4>Backwards Compatibility</h4>
     <p>The changes in this proposal are fully backwards-compatible. All existing
     programs will be valid with named arguments added to the language. Only
