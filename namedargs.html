@@ -23,25 +23,42 @@
         <th>Date:</th><td>2014-06-13</td>
       </tr>
     </table>
+    <h4>Abstract</h4>
+    <p>We propose a new mechanism for associating function arguments with
+    function parameters: by name, with the syntax <code>name : value</code>. We
+    believe using named arguments will increase the readability of function
+    calls, as well as making it easier to write them and reducing the likelihood
+    of mistakes. Parameter names are associated with a function for the purpose
+    of a call by looking at the declarations of the function visible from the
+    call site; use of named arguments is allowed if all declarations use
+    consistent names.</p>
     <h4>Motivation</h4>
-    <p>Large software projects usually have thousands of different functions
-    that accept a large number of parameters which use the same types or are
-    otherwise indistinguishable at call sites because of implicit conversions.
-    As a result, it's common to see a large number of arguments at the call
-    sites and it's difficult to tell what a function call does exactly without
-    checking its declaration and matching the arguments manually.  Even more
-    importantly, it's very common for authors to make mistakes when passing the
-    arguments by making incorrect assumptions about the order in which the
-    function expects them, which can cause bugs at runtime which are hard to
-    prevent and diagnose.</p>
-    <p>We therefore believe that it would be very useful to have a mechanism 
-    in the language in order to help document
-    the author's intention at the call site, and prevent them from making
-    mistakes at compile time.  We believe that by allowing the author to name
-    the arguments that they're passing to the function and have the compiler
-    match them with the parameters that the function expects by matching the
-    names.</p>
-    <h4>Example</h4>
+    <p>Function arguments are currently associated with function parameters by
+    position. This has implications for writing and reading function calls.</p>
+    <p>When writing a function call, one needs to be careful to write the
+    arguments in the same order as the parameters in the function declaration;
+    depending on the types of the parameters, the compiler can catch some
+    mistakes, but other times they lead to runtime bugs that are hard to
+    diagnose and prevent.</p>
+    <p>When reading a function call, the only information
+    about the purpose of the argument that is present at the call site is its
+    value and order relative to other arguments; for more information, the
+    reader needs to refer to the corresponding parameter's name in the function
+    declaration.</p>
+    <p>Function declarations are typically "far away" from function calls in
+    code, meaning elsewhere in the file or, more often, in a different file.
+    Therefore, we believe that a mechanism for associating function arguments
+    with function parameters that reduces the need to refer to the function
+    declaration when writing and reading function calls, would make both jobs
+    easier.</p>
+    <p>This is particularly the case for large software projects, where there
+    can be thousands of functions in play at once, and reliance on conventions
+    (such as "top, right, left, bottom") doesn't scale; and particularly the
+    case for C++, where gotchas such as implicit conversions mean that extra
+    care is required for things like argument order.</p>
+    <p>We specifically propose that function arguments can be associated with
+    function parameters by using the parameter's name at the call site.</p>
+    <h5>Example</h5>
     <p>Below is an example of the kind of code that can be written with what
     is being proposed here.</p>
     <code>
@@ -115,7 +132,17 @@
       void test() {
           foo(1, c: "s", b: 'c');  // valid
           bar(1, c: 0.2);          // valid
-          bar(c: 0.2);             // invalid - number of positional arguments(0) less than the index of the last unnamed parameter(1)
+          bar(c: 0.2);             // invalid - number of positional arguments (0) less than the index of the last unnamed parameter (1)
+      }
+    </code>
+    <p>As an exception, if a declaration does not provide names for any
+    arguments, it is ignored.</p>
+    <code>
+      void foo(int a, char b, std::string c);
+      void foo(int, char, std::string);
+
+      void test() {
+          foo(a: 1, b: 'c', c: "s");  // valid
       }
     </code>
     <p>Functions definitions do not affect calling functions with named
@@ -160,57 +187,224 @@
     unit.</p>
     <h5>Overload resolution</h5>
     <p>Overload resolution needs to be modified slightly in order to handle
-    named arguments correctly.  We focus on calls to named functions
-    [over.call.func] here.  The wording here will be extended for other contexts
-    of overload resolution in the future.</p>
-    <p>We need to define a new condition in order to determine whether a
-    candidate function is viable or not.  The basic idea is to use the names of
-    the named arguments to filter out the candidate functions for which we will
-    be unable to assign each argument to a parameter in a function declaration.
-    The following gives a more precise definition of how this part of the
-    proposal works.</p>
-    <p>Let's assume that the function call has M positional arguments and N
-    named arguments.  A given candidate is discarded if either of the following
-    conditions holds:</p>
+    named arguments correctly. We do not propose to modify the rules for
+    determining the set of candidate functions and argument lists that are the
+    inputs to the overload resolution process <code>[over.match.funcs]</code>,
+    nor the rules for selecting the best viable function
+    <code>[over.match.best]</code>. We only propose to modify the rules for
+    determining which candidates are viable to begin with
+    <code>[over.match.viable]</code>, and our modifications only apply to calls
+    that involve named arguments.</p>
+    <p>Specifically, for calls that involve named arguments, we define rules
+    for matching arguments to parameters, and consider candidates where not all
+    arguments and parameters are matched according to these rules, to be not
+    viable.</p>
+    <p>Let's consider a function call with M positional arguments and N named
+    arguments. A given candidate function is viable if:</p>
     <ul>
-      <li>The candidate has fewer than M + N arguments.
-      <li>Disregarding the first M parameters of the function, there is a name
-      in the list of the rest of the arguments at the call site for which a
-      corresponding parameter cannot be found.
-      <li>A required parameter of the function remains unmatched after the
-      above step.
+      <li>The candidate has at least M + N parameters.</li>
+      <li>Disregarding the first M parameters of the candidate, every named
+      argument in the call can be matched to a parameter of the candidate by
+      name.</li>
+      <li>All parameters of the candidate which remain unmatched after the
+      above step have a default value.</li>
     </ul>
-    <p>For remaining candidate functions, we reorder the N named arguments and
-    if for some i &lt; M + N, the i'th parameter of the function remains unmatched,
-    we match it with a synthetic argument using the parameter's default value. Note
-    that given
-    the above conditions, such parameters are guaranteed to have a default
-    value.</p>
-    <p>After this step, the rest of the overload resolution steps will be taken
-    as normal.</p>
-    <p>It should also be noted that we only consider the declarations preceding
-    the call site in the above steps.</p>
-    <h4>FAQ</h4>
-    <p>Q: Is this backwards compatible?</p>
-    <p>A: Yes.  All existing programs will be valid with named arguments added
-    to the language.  Only call sites which use named arguments will be
-    affected by this proposal.</p>
-    <p>Q: Why was the <em>name: value</em> syntax chosen? Was other syntax considered?
-    <p>A: The <em>name=value</em> syntax was considered, but rejected because "="
-    is an operator and thus there would be an ambiguity. A ":" only current appears 
-    at the beginning of a <em>ctor-initializer</em>, after an <em>access-specifier</em>,
-    or in a <em>labeled-statement</em>, all contexts which are disjoint from
-    <em>expression-list</em>, so there is no ambiguity.
-    <p>Q: Is there wording available for this proposal?</p>
-    <p>A: Not yet.  At this stage we are mostly interested in general feedback
-    about this proposal.</p>
-    <p>Q: Has this been implemented?</p>
-    <p>A: Not yet.  From an implementation perspective, most of the effort of
-    this proposal would be on the overload resolution phase of compilers.  One
-    of the authors of this proposal has looked at the overload resolution
-    implementation of clang, and while we don't have an implementation yet, we
-    believe that it will be relatively straightforward.  We have tried to
-    ensure that the proposal makes as few changes to the language as possible
-    because of implementation concerns.</p>
+    <p>For a candidate function which is viable according to the above rules,
+    we adjust the argument list as follows: the N named arguments are reordered
+    to match the order of the parameters they have been matched with; if, for
+    some i &lt; M + N, the i'th parameter of the function has no matching
+    argument - in which case, according to the above rules, it must have a
+    default argument - we match it with a synthetic argument using the value of
+    said default argument.</p>
+    <p>After this adjustment, the rest of the overload resolution process
+    proceeds as before.</p>
+    <p>Note that for function templates, the above matching and adjustment
+    process happens before template argument deduction (which requires
+    matched argument/parameter pairs).</p>
+    <h4>Interactions with other language features</h4>
+    <h5>Constructor calls with <code>{ ... }</code> syntax</h5>
+    <p>As part of C++11 "uniform initialization", constructors can be called
+    with a <code>{ }</code> syntax in addition to a <code>( )</code> syntax:</p>
+    <code>
+      struct S {
+        S(int a, std::string b);
+        ...
+      };
+
+      S s(1, "foo");
+      S s{0, "bar"};
+    </code>
+    <p>We propose allowing the use of named arguments with both syntaxes:</p>
+    <code>
+      S s(a: 1, b: "foo");  // valid
+      S s{a: 0, b: "bar"};  // also valid
+    </code>
+    <h5>Aggregate initialization</h5>
+    <p>However, we do not propose allowing the use of named arguments with
+    aggregate initialization:</p>
+    <code>
+      struct S {
+        int a;
+        std::string b;
+      };
+
+      S s{1, "foo"};        // valid C++11
+      S s{a: 1, b: "foo"};  // not valid
+    </code>
+    <p>The rationale is that the names <code>a</code> and <code>b</code> here
+    are names of data members, whereas our proposal is about associating
+    arguments with parameter names.</p>
+    <p>We realize that this choice implies that the presence or absence of a
+    constructor in an aggregate class becomes more noticeable to users than
+    it was before. However, we believe that allowing the use of data member
+    names in the same syntax as named arguments has its own problems. For
+    example, adding a constructor to an aggregate class where the constructor
+    parameter names are different from the data member names could change the
+    meaning of the program. We believe disallowing this is the lesser of two
+    evils.</p>
+    <h5>Calls through function pointers</h5>
+    <p>Consider the following code:</p>
+    <code>
+      void func(int a, int b);
+
+      using funcptr_t = void (*)(int x, int y);
+
+      funcptr_t f = &func;
+
+      f(2, 3);
+    </code>
+    <p>Is it reasonable to allow a call to <code>f</code> to use named
+    arguments? If so, what names would be allowed?</p>
+    <p>Clearly, the names <code>a</code> and <code>b</code> are out of the
+    running, as they are the names of the function that the function pointer
+    points to, and what function a function pointer points to is a runtime
+    property of the program which the compiler cannot reason about.</p>
+    <p>However, perhaps it's reasonable to use the names <code>x</code> and
+    <code>y</code>, that is, the names of the parameters used in the declaration
+    of the function pointer, or (in case of a declaration using a typedef, as
+    here) in the declaration of the function pointer type?</p>
+    <p>We propose <strong>not</strong> allowing <code>x</code> and
+    <code>y</code> either, because it would require compilers to track parameter
+    names in typedef declarations and associate different declarations of a
+    typedef with each other to verify that the names are consistent. This
+    would cover new ground by giving typedef names a use they don't
+    currently have.</p>
+    <p>In summary, we propose disallowing named arguments for calls through
+    function pointers altogether.</p>
+    <h5>Perfect forwarding</h5>
+    <p>We've had a request to interoperate with perfect forwarding in such a way
+    that the following works:</p>
+    <code>
+      struct Rect {
+        Rect(int width, int height);
+        ...
+      };
+
+      auto p = make_shared&lt;Rect&gt;(width: 100, height: 200);
+    </code>
+    <p>While we agree that having this work would be desirable, unfortunately we
+    are not aware of a way to make this work without making parameter names
+    part of a function's type, something we definitely do not propose (see
+    Design Choices below).</p>
+    <h4>Backwards Compatibility</h4>
+    <p>The changes in this proposal are fully backwards-compatible. All existing
+    programs will be valid with named arguments added to the language. Only
+    call sites which use named arguments are affected by this proposal.</p>
+    <h4>Design Choices</h4>
+    <h5>Syntax</h5>
+    <p>The <em>name : value</em> syntax was chosen because there is precedent
+    in other languages for using it to associate a key and a value (e.g. Python
+    dictionaries, and because it does not create any ambiguity.
+    <em>name=value</em> was considered, but rejected because "=" is an operator
+    and thus there would be an ambiguity. A ":" only current appears at the
+    beginning of a <em>ctor-initializer</em>, after an
+    <em>access-specifier</em>, or in a <em>labeled-statement</em>, all contexts
+    which are disjoint from <em>expression-list</em>, so there is no
+    ambiguity.</p>
+    <h5>Not making parameter names part of a function's type</h5>
+    <p>In this proposal, the association of parameter names with a function for
+    the purpose of making calls with named arguments to that function happens
+    locally in each translation unit, and new declarations within a
+    translation unit can change a function's ability to be called with named
+    arguments at call sites below the new declaration (by using different
+    names than a previous declaration).</p>
+    <p>A possible alternative would have been to encode parameter names in a
+    function's type, and thus have them be coupled more closely to the function
+    as an entity, possibly including across translation units.</p>
+    <p>We chose not to pursue this alternative because we felt it would be a
+    far more complex and invasive change to the language, with relatively
+    little gain. It would also likely be non-backwards-compatible.</p>
+    <h5>Automatically allowing existing functions to be called via named
+    arguments</h5>
+    <p>This proposal allows calling existing functions with named
+    arguments, without the author of the function having to "opt-in" to this in
+    any way.</p>
+    <p>We chose this because we believe this feature has sufficient value that
+    programmers should be able to start using it right away, without having to
+    wait for libraries and APIs to opt-in to named arguments. We also believe
+    that the potential for use in a way the author doesn't intend is low.</p>
+    <h4>Potential objections, and our responses</h4>
+    <h5>Objection #1: This feature caters to having functions with many
+    parameters - a programming style that should be discouraged.</h5>
+    <p>We agree that having functions with many parameters should be
+    discouraged. However, the reality is that many legacy APIs that
+    programmers have to work with and will have to work with for a long time,
+    have functions with many arguments, and making it easier to deal with such
+    functions would solve a real problem and be materially useful.</p>
+    <p>More importantly, however, this feature has a lot of value for functions
+    with few arguments, too. Even for functions with few arguments, when reading
+    a call site one has relatively little information about the roles of the
+    arguments. Having names of arguments present would make call sites more
+    readable, regardless of the number of arguments.</p>
+    <h5>Objection #2: This proposal competes with C99 designated initializers,
+    which are <a
+href="http://htmlpreview.github.io/?https://raw.github.com/CTMacUser/multiarray-
+iso-proposal/master/designation-proposal.html"> being proposed for C++</a></h5>
+    <p>This proposal and designated initializers have in common that they both
+    allow the use of names to allow specifying a list of entities in an order
+    that's not necessarily the order of their declaration.</p>
+    <p>For C99 designated initializers, the entities being named are data
+    members of a structure (and this is reflected in the
+    <code>.name = value</code> syntax). In our proposal, the entities being
+    named are always parameters of a function (note that while we support
+    constructor calls via the <code>{ ... }</code>, we do not support
+    aggregate initialization (see "Interactions with other language features"
+    above)).</p>
+    <p>The two proposals therefore have no overlap, and we believe they are
+    complementary.</p>
+    <h4>Implementation Status</h4>
+    <p>This proposal is not implemented yet. Most of the effort would be in
+    changes to the overload resolution phase of compilers. One of the authors of
+    this proposal has looked at the overload resolution implementation of clang,
+    and we believe the changes will be relatively straightforward to implement.
+    We have tried to ensure that the proposal makes as few changes to the
+    language as possible to avoid unnecessary implementation complexity.</p>
+    <h4>Standard Wording</h4>
+    <p>There is no standard wording for this proposal yet. At this stage, we
+    are mostly interested in getting general feedback.</p>
+    <h4>Possible extensions and spin-off ideas</h4>
+    <h5>Non-trailing default arguments</h5>
+    <p>With named arguments, it might become sensible to allow default arguments
+    in non-trailing positions. For example,</p>
+    <code>void f(int a = 10, int b);</code>
+    <p>could be called like so:</p>
+    <code>f(b: 5);</code>
+    <p>We have no objections to this, but would prefer leaving it to a follow-up
+    proposal to avoid scope creep.</p>
+    <h5>Named template arguments</h5>
+    <p>The arguments in favour or allowing named arguments for function calls
+    also apply to template arguments. We can imagine a similar proposal that
+    allows specifying template parametes via named arguments. For example:</p>
+    <code>
+      template &lt;typename Key, typename Value&gt;
+      struct map { ... };
+
+      map&lt;Key: int, Value: string&gt; m;
+    </code>
+    <p>We think it makes sense to pursue this as a separate proposal,
+    independent of this one.</p>
+    <h4>Acknowledgements</h4>
+    <p>We are grateful for the feedback received from numerous members of the
+    Mozilla community as well the C++ standards community.</p>
   </body>
 </html>
