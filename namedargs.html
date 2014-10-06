@@ -168,36 +168,40 @@
     unit.</p>
     <h5>Overload resolution</h5>
     <p>Overload resolution needs to be modified slightly in order to handle
-    named arguments correctly.  We focus on calls to named functions
-    [over.call.func] here.  The wording here will be extended for other contexts
-    of overload resolution in the future.</p>
-    <p>We need to define a new condition in order to determine whether a
-    candidate function is viable or not.  The basic idea is to use the names of
-    the named arguments to filter out the candidate functions for which we will
-    be unable to assign each argument to a parameter in a function declaration.
-    The following gives a more precise definition of how this part of the
-    proposal works.</p>
-    <p>Let's assume that the function call has M positional arguments and N
-    named arguments.  A given candidate is discarded if either of the following
-    conditions holds:</p>
+    named arguments correctly. We do not propose to modify the rules for
+    determining the set of candidate functions and argument lists that are the
+    inputs to the overload resolution process <code>[over.match.funcs]</code>,
+    nor the rules for selecting the best viable function
+    <code>[over.match.best]</code>. We only propose to modify the rules for
+    determining which candidates are viable to begin with
+    <code>[over.match.viable]</code>, and our modifications only apply to calls
+    that involve named arguments.</p>
+    <p>Specifically, for calls that involve named arguments, we define rules
+    for matching arguments to parameters, and consider candidates where not all
+    arguments and parameters are matched according to these rules, to be not
+    viable.</p>
+    <p>Let's consider a function call with M positional arguments and N named
+    arguments. A given candidate function is viable if:</p>
     <ul>
-      <li>The candidate has fewer than M + N arguments.
-      <li>Disregarding the first M parameters of the function, there is a name
-      in the list of the rest of the arguments at the call site for which a
-      corresponding parameter cannot be found.
-      <li>A required parameter of the function remains unmatched after the
-      above step.
+      <li>The candidate has at least M + N parameters.</li>
+      <li>Disregarding the first M parameters of the candidate, every named
+      argument in the call can be matched to a parameter of the candidate by
+      name.</li>
+      <li>All parameters of the candidate which remain unmatched after the
+      above step have a default value.</li>
     </ul>
-    <p>For remaining candidate functions, we reorder the N named arguments and
-    if for some i &lt; M + N, the i'th parameter of the function remains unmatched,
-    we match it with a synthetic argument using the parameter's default value. Note
-    that given
-    the above conditions, such parameters are guaranteed to have a default
-    value.</p>
-    <p>After this step, the rest of the overload resolution steps will be taken
-    as normal.</p>
-    <p>It should also be noted that we only consider the declarations preceding
-    the call site in the above steps.</p>
+    <p>For a candidate function which is viable according to the above rules,
+    we adjust the argument list as follows: the N named arguments are reordered
+    to match the order of the parameters they have been matched with; if, for
+    some i &lt; M + N, the i'th parameter of the function has no matching
+    argument - in which case, according to the above rules, it must have a
+    default argument - we match it with a synthetic argument using the value of
+    said default argument.</p>
+    <p>After this adjustment, the rest of the overload resolution process
+    proceeds as before.</p>
+    <p>Note that for function templates, the above matching and adjustment
+    process happens before template argument deduction (which requires
+    matched argument/parameter pairs).</p>
     <h4>Interactions with other language features</h4>
     <h5>Constructor calls with <code>{ ... }</code> syntax</h5>
     <p>As part of C++11 "uniform initialization", constructors can be called
