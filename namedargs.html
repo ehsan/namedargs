@@ -126,6 +126,16 @@
           bar(c: 0.2);             // invalid - number of positional arguments (0) less than the index of the last unnamed parameter (1)
       }
     </code>
+    <p>As an exception, if a declaration does not provide names for any
+    arguments, it is ignored.</p>
+    <code>
+      void foo(int a, char b, std::string c);
+      void foo(int, char, std::string);
+
+      void test() {
+          foo(a: 1, b: 'c', c: "s");  // valid
+      }
+    </code>
     <p>Functions definitions do not affect calling functions with named
     arguments in any way.  Example:</p>
     <code>
