@@ -333,7 +333,9 @@
     as an entity, possibly including across translation units.</p>
     <p>We chose not to pursue this alternative because we felt it would be a
     far more complex and invasive change to the language, with relatively
-    little gain. It would also likely be non-backwards-compatible.</p>
+    little gain. It would also likely be non-backwards-compatible both in terms
+    of source code backwards compatibility and ABI compatibility considering
+    mangling of names having to take the argument names into account.</p>
     <h5>Automatically allowing existing functions to be called via named
     arguments</h5>
     <p>This proposal allows calling existing functions with named
