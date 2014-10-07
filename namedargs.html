@@ -45,7 +45,7 @@
     value and order relative to other arguments; for more information, the
     reader needs to refer to the corresponding parameter's name in the function
     declaration.</p>
-    <p>Function declarations are typically "far away" from function calls in
+    <p>Function declarations are typically &quot;far away&quot; from function calls in
     code, meaning elsewhere in the file or, more often, in a different file.
     Therefore, we believe that a mechanism for associating function arguments
     with function parameters that reduces the need to refer to the function
@@ -53,7 +53,7 @@
     easier.</p>
     <p>This is particularly the case for large software projects, where there
     can be thousands of functions in play at once, and reliance on conventions
-    (such as "top, right, left, bottom") doesn't scale; and particularly the
+    (such as &quot;top, right, left, bottom&quot;) doesn't scale; and particularly the
     case for C++, where gotchas such as implicit conversions mean that extra
     care is required for things like argument order.</p>
     <p>We specifically propose that function arguments can be associated with
@@ -91,11 +91,11 @@
       void baz(int a, ...);
       template &lt;class ...T&gt; void qux(T... a);
       void test() {
-          foo(1, 'c', "s");        // valid
-          foo(1, b: 'c', c: "s");  // valid
-          foo(a: 1, 'c', "s");     // invalid -- named argument followed by positional
-          foo(1, c: "s", b: 'c');  // valid
-          foo(1, 'c', c: "s");     // valid
+          foo(1, 'c', &quot;s&quot;);        // valid
+          foo(1, b: 'c', c: &quot;s&quot;);  // valid
+          foo(a: 1, 'c', &quot;s&quot;);     // invalid -- named argument followed by positional
+          foo(1, c: &quot;s&quot;, b: 'c');  // valid
+          foo(1, 'c', c: &quot;s&quot;);     // valid
           bar(1, c: 0.2);          // valid
           bar(1, b: 'c');          // valid
           bar(1, c: 0.2, b: 'c');  // valid
@@ -115,9 +115,9 @@
       void bar(int a, char b);
       void bar(int x, char b);
       void test() {
-          foo(1, 'c', "s");     // valid
-          foo(1, 'c', c: "s");  // invalid -- different names for an argument in multiple declarations
-          foo(1, 'c', x: "s");  // invalid -- different names for an argument in multiple declarations
+          foo(1, 'c', &quot;s&quot;);     // valid
+          foo(1, 'c', c: &quot;s&quot;);  // invalid -- different names for an argument in multiple declarations
+          foo(1, 'c', x: &quot;s&quot;);  // invalid -- different names for an argument in multiple declarations
           bar(1, b: 'c');       // invalid -- different names for an argument in multiple declarations
       }
     </code>
@@ -130,7 +130,7 @@
       void foo(int, char b, std::string c);
       void bar(int, char b='c', float c=0.1);
       void test() {
-          foo(1, c: "s", b: 'c');  // valid
+          foo(1, c: &quot;s&quot;, b: 'c');  // valid
           bar(1, c: 0.2);          // valid
           bar(c: 0.2);             // invalid - number of positional arguments (0) less than the index of the last unnamed parameter (1)
       }
@@ -142,7 +142,7 @@
       void foo(int, char, std::string);
 
       void test() {
-          foo(a: 1, b: 'c', c: "s");  // valid
+          foo(a: 1, b: 'c', c: &quot;s&quot;);  // valid
       }
     </code>
     <p>Functions definitions do not affect calling functions with named
@@ -150,7 +150,7 @@
     <code>
       void foo(int a, char b, std::string c);
       void test() {
-          foo(c: "s", a: 1, b: 'c');  // valid
+          foo(c: &quot;s&quot;, a: 1, b: 'c');  // valid
       }
       void foo(int x, char y, std::string z) {}
     </code>
@@ -159,8 +159,8 @@
       void foo(int a, char b, std::string c);
       void foo(int x, char y, std::string z) {}
       void test() {
-          foo(c: "s", a: 1, b: 'c');  // still valid
-          foo(x: 1, y: 'c', z: "s");  // still invalid
+          foo(c: &quot;s&quot;, a: 1, b: 'c');  // still valid
+          foo(x: 1, y: 'c', z: &quot;s&quot;);  // still invalid
       }
     </code>
     <p>However, if a function definition is the first declaration of a function, 
@@ -168,7 +168,7 @@
     <code>
       void foo(int a, char b, std::string c) {}
       void test() {
-          foo(c: "s", a: 1, b: 'c');  // valid
+          foo(c: &quot;s&quot;, a: 1, b: 'c');  // valid
       }
     </code>
     <p>If a following declaration then defines different names for the parameters, 
@@ -177,7 +177,7 @@
       void foo(int a, char b, std::string c) {}
       void foo(int x, char y, std::string z);
       void test() {
-          foo(c: "s", a: 1, b: 'c');  // invalid -- different names for an argument in multiple declarations
+          foo(c: &quot;s&quot;, a: 1, b: 'c');  // invalid -- different names for an argument in multiple declarations
       }
     </code>
     <p>All of the above applies to function declarations/definitions in a single
@@ -223,7 +223,7 @@
     matched argument/parameter pairs).</p>
     <h4>Interactions with other language features</h4>
     <h5>Constructor calls with <code>{ ... }</code> syntax</h5>
-    <p>As part of C++11 "uniform initialization", constructors can be called
+    <p>As part of C++11 &quot;uniform initialization&quot;, constructors can be called
     with a <code>{ }</code> syntax in addition to a <code>( )</code> syntax:</p>
     <code>
       struct S {
@@ -231,13 +231,13 @@
         ...
       };
 
-      S s(1, "foo");
-      S s{0, "bar"};
+      S s(1, &quot;foo&quot;);
+      S s{0, &quot;bar&quot;};
     </code>
     <p>We propose allowing the use of named arguments with both syntaxes:</p>
     <code>
-      S s(a: 1, b: "foo");  // valid
-      S s{a: 0, b: "bar"};  // also valid
+      S s(a: 1, b: &quot;foo&quot;);  // valid
+      S s{a: 0, b: &quot;bar&quot;};  // also valid
     </code>
     <h5>Aggregate initialization</h5>
     <p>However, we do not propose allowing the use of named arguments with
@@ -248,8 +248,8 @@
         std::string b;
       };
 
-      S s{1, "foo"};        // valid C++11
-      S s{a: 1, b: "foo"};  // not valid
+      S s{1, &quot;foo&quot;};        // valid C++11
+      S s{a: 1, b: &quot;foo&quot;};  // not valid
     </code>
     <p>The rationale is that the names <code>a</code> and <code>b</code> here
     are names of data members, whereas our proposal is about associating
@@ -312,11 +312,11 @@
     call sites which use named arguments are affected by this proposal.</p>
     <h4>Design Choices</h4>
     <h5>Syntax</h5>
-    <p>The <em>name : value</em> syntax was chosen because there is precedent
+    <p>The <code>name : value</code> syntax was chosen because there is precedent
     in other languages for using it to associate a key and a value (e.g. Python
     dictionaries, and because it does not create any ambiguity.
-    <em>name=value</em> was considered, but rejected because "=" is an operator
-    and thus there would be an ambiguity. A ":" only current appears at the
+    <code>name=value</code> was considered, but rejected because &quot;=&quot; is an operator
+    and thus there would be an ambiguity. A &quot;:&quot; only current appears at the
     beginning of a <em>ctor-initializer</em>, after an
     <em>access-specifier</em>, or in a <em>labeled-statement</em>, all contexts
     which are disjoint from <em>expression-list</em>, so there is no
@@ -339,7 +339,7 @@
     <h5>Automatically allowing existing functions to be called via named
     arguments</h5>
     <p>This proposal allows calling existing functions with named
-    arguments, without the author of the function having to "opt-in" to this in
+    arguments, without the author of the function having to &quot;opt-in&quot; to this in
     any way.</p>
     <p>We chose this because we believe this feature has sufficient value that
     programmers should be able to start using it right away, without having to
@@ -370,7 +370,7 @@ iso-proposal/master/designation-proposal.html">being proposed for C++</a></h5>
     <code>.name = value</code> syntax). In our proposal, the entities being
     named are always parameters of a function (note that while we support
     constructor calls via the <code>{ ... }</code>, we do not support
-    aggregate initialization (see "Interactions with other language features"
+    aggregate initialization (see &quot;Interactions with other language features&quot;
     above)).</p>
     <p>The two proposals therefore have no overlap, and we believe they are
     complementary.</p>
