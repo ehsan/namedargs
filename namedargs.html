@@ -379,6 +379,102 @@ iso-proposal/master/designation-proposal.html">being proposed for C++</a></h5>
     above)).</p>
     <p>The two proposals therefore have no overlap, and we believe they are
     complementary.</p>
+    <h5>Objection #3: Named arguments make parameter names part of a function's
+    interface, so that changing the parameter names can change call sites</h5>
+    <p>We were initially concerned about this as well. To get an idea about the
+    magnitude of this problem, we surveyed some large open-source libraries to
+    see how often parameter names change in the declarations of the public API
+    functions (i.e., the names that users would use when making calls to these
+    functions).</p>
+    <p>For each library, we chose a recent release and a release from several
+    years ago, examined the diff between the two versions, and recorded the
+    number of parameter name changes. Only name changes that preserved the types
+    of the parameters were considered, as a change to the type of a parameter
+    typically breaks a function's interface already. The table below summarizes
+    our findings. For more details, please see <a href="#ref1">[1]</a>.</p>
+    <table border="1" style="text-align: center">
+      <thead style="font-weight: bold">
+        <tr>
+          <td rowspan="2">Library</td>
+          <td colspan="2">Version Range</td>
+          <td rowspan="2">Number of Parameter<br>Name Changes</td>
+        </tr>
+        <tr>
+          <td>Start</td>
+          <td>End</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a
+href="http://eigen.tuxfamily.org/index.php?title=Main_Page">Eigen</a></td>
+          <td>2.0.0 (2009)</td>
+          <td>3.0.0 (2011)</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td><a href="http://wxwidgets.org/">wxWidgets</a></td>
+          <td>2.5.0.1 (2003)</td>
+          <td>3.0.0 (2013)</td>
+          <td>12</td>
+        </tr>
+        <tr>
+          <td><a
+href="http://www.boost.org/doc/libs/release/libs/asio/">Boost.Asio</a></td>
+          <td>1.50.0 (2012)</td>
+          <td>1.55.0 (2013)</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><a
+href="http://www.boost.org/doc/libs/release/libs/date_time/">Boost.DateTime</a>
+</td>
+          <td>1.50.0 (2012)</td>
+          <td>1.55.0 (2013)</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><a
+href="http://www.boost.org/doc/libs/release/libs/filesystem/">Boost.Filesystem
+</a></td>
+          <td>1.45.0 (2010)</td>
+          <td>1.55.0 (2013)</td>
+          <td>0</td>
+        </tr>        
+        <tr>        
+          <td><a
+href="http://www.boost.org/doc/libs/release/libs/gil/">Boost.GIL</a></td>
+          <td>1.45.0 (2010)</td>
+          <td>1.55.0 (2013)</td>
+          <td>0</td>
+        </tr>        
+        <tr>
+          <td><a
+href="http://www.boost.org/doc/libs/release/libs/math/">Boost.Math</a></td>
+          <td>1.45.0 (2010)</td>
+          <td>1.55.0 (2013)</td>
+          <td>22</td>
+        </tr>
+        <tr>
+          <td><a
+href="http://www.boost.org/doc/libs/release/libs/regex/">Boost.Regex</a></td>
+          <td>1.45.0 (2010)</td>
+          <td>1.55.0 (2013)</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td><a
+href="http://www.boost.org/doc/libs/release/libs/thread/">Boost.Thread</a></td>
+          <td>1.45.0 (2010)</td>
+          <td>1.55.0 (2013)</td>
+          <td>4</td>
+        </tr>
+      </tbody>      
+    </table>
+    <p>Given the low number of parameter name changes relative to the sizes of
+    these libraries over periods of several years, we believe that code breakage
+    due to parameter name changes would not be a significant problem in
+    practice.</p>
     <h4>Implementation Status</h4>
     <p>This proposal is not implemented yet. Most of the effort would be in
     changes to the overload resolution phase of compilers. One of the authors of
@@ -415,8 +511,9 @@ iso-proposal/master/designation-proposal.html">being proposed for C++</a></h5>
     Mozilla community as well the C++ standards community.</p>
     <h4>References</h4>
     <ol>
-      <li>A <a href="">study</a> performed on the changes to argument names of the functions
-      in the public interface of some large open source projects.</li>
+      <li><a name="ref1">A <a href="">study</a> performed on the
+      changes to argument names of the functions in the public interface of some
+      large open source projects.</a></li>
     </ol>
   </body>
 </html>
