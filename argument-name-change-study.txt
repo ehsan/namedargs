@@ -1,0 +1,74 @@
+Eigen
+Diff from tag 2.0.0 to 3.0.0
+
+ * A number of solve() functions have been changed to have one arg instead of two, but the name of the remaining arg ("b") has been preserved.
+ * assign_DefaultTraversal_InnerUnrolling::run()'s third arg has been renamed from "row_or_col" to "outer".
+ * Same for assign_innervec_InnerUnrolling::run().
+ * CommaInitializer::CommaInitializer()'s first arg has been renamed from "mat" to "xpr".
+ * Same for CwiseUnaryOp::CwiseUnaryOp().
+
+wxWidgets
+Diff from tag WX2_5_0_1 to WX_3_0_0
+
+ * wxBitmapHandlerBase::Create and LoadFile have changed their third argument from "flags" to "type".  (Might be a semantic change.)
+ * wxClipboardBase::UsePrimarySelection's argument has changed from "primary" to "usePrimary".
+ * wxGrid::SendEvent has changed its first argument from "type" to "evtType".
+ * wxGenericListCtrl::Create has changed its second argument from "id" to "winid".
+ * wxGenericMDIParentFrame::wxGenericMDIParentFrame and wxGenericMDIParentFrame::Create have changed their second argument from "id" to "winid".
+ * wxGenericMDIChildFrame::wxGenericMDIChildFrame and wxGenericMDIChildFrame::Create have changed their second argument from "id" to "winid".
+ * wxChoice::FindString has changed its first argument from "string" to "s".
+ * wxSpinCtrl::SetValue has changed its argument from "text" to "value".
+ * wxHtmlHelpController::SetFrameParameters has changed its first argument from "title" to "titleFormat".
+
+boost asio
+Diff from tag boost-1.50.0 to boost-1.55.0
+
+ * basic_endpoint::basic_endpoint's "path_name" argument has been renamed to "socket_address".  (Note that the name of the namespace that this class was declared in has also changed, it's a detail class.)
+
+boost date_time
+Diff from tag boost-1.50.0 to boost-1.55.0
+
+ * delimiter_strings::delimiter_strings: all of the argument names have been removed.
+
+bool file_system
+Diff from tag boost-1.45.0 to boost-1.55.0
+
+No changes in argument names
+
+bool gil
+Diff from tag boost-1.45.0 to boost-1.55.0
+
+No changes in argument names
+
+boost math
+Diff from tag boost-1.45.0 to boost-1.55.0
+
+ * cauchy_distribution::cauchy_distribution() has changed its "location" argument to "l_location" and its "scale" argument to "l_scale".
+ * exponential_distribution::exponential_distribution() has changed its "lambda" argument to "l_lambda".
+ * gamma_distribution::gamma_distribution() has changed its "shape" argument to "l_shape" and its "scale" argument to "l_scale".
+ * inverse_chi_squared_distribution::inverse_chi_squared_distribution() has changed its "scale" argument to "l_scale".
+ * inverse_gamma_distribution::inverse_gamma_distribution() has changed its "shape" argument to "l_shape" and its "scale" argument to "l_scale".
+ * laplace_distribution::laplace_distribution() has changed its "location" argument to "l_location" and its "scale" argument to "l_scale".
+ * logistic_distribution::logistic_distribution() has changed its "location" argument to "l_location" and its "scale" argument to "l_scale".
+ * lognormal_distribution::lognormal_distribution() has changed its "location" argument to "l_location" and its "scale" argument to "l_scale".
+ * normal_distribution::normal_distribution() has changed its "mean" argument to "l_mean".
+ * poisson_distribution::poisson_distribution() has changed its "mean" argument to "l_mean".
+ * students_t_distribution::students_t_distribution() has changed its "i" argument to "df".
+ * triangular_distribution::triangular_distribution() has changed its "lower" argument to "l_lower", its "mode" argument to "l_mode" and its "upper" argument to "l_upper".
+ * uniform_distribution::uniform_distribution() has changed its "lower" argument to "l_lower" and its "upper" argument to "l_upper".
+ * weibull_distribution::weibull_distribution() has changed its "shape" argument to "l_shape" and its "scale" argument to "l_scale".
+ * The name of the first argument to evaluate_polynomial_c_imp has been removed.
+
+boost regex
+Diff from tag boost-1.45.0 to boost-1.55.0
+
+No changes in argument names
+
+boost thread
+Diff from tag boost-1.45.0 to boost-1.55.0
+
+ * thread::timed_join() has changed its first argument from "wait_until" to "abs_time".
+ * condition_variable::timd_wait() has changed its first argument from "wait_until" to "abs_time".
+ * timed_mutex::timed_lock() has changed its first argument from "abs_time" to "timeout".
+ * recursive_timed_mutex::timed_lock() has changed its first argument from "abs_time" to "timeout".
+
