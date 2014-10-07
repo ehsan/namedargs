@@ -56,6 +56,11 @@
     (such as &quot;top, right, left, bottom&quot;) doesn't scale; and particularly the
     case for C++, where gotchas such as implicit conversions mean that extra
     care is required for things like argument order.</p>
+    <p>Another example of where this proposal is useful is with boolean arguments.
+    Some large software projects discourage the usage of the <code>bool</code>
+    type as an argument and require authors to use enums or consts to convey
+    what the boolean arguments mean at the call site. With this proposal, however,
+    boolean arguments can be used without the loss of readability at the call site.</p>
     <p>We specifically propose that function arguments can be associated with
     function parameters by using the parameter's name at the call site.</p>
     <h5>Example</h5>
